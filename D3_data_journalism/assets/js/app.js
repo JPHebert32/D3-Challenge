@@ -49,17 +49,17 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
    });
 
    // create scales
-   var xTimeScale = d3.scaleTime()
+   var xLinearScale = d3.scaleLinear()
      .domain(d3.extent(healthData, d => d.age))
      .range([0, width]);
 
    var yLinearScale = d3.scaleLinear()
-     .domain([0, d3.max(healthData, d => d.smokes)])
+     .domain([0, d3.max(healthData, d => d.smokes)*10])
      .range([height, 0]);
 
    // create axes
-   var xAxis = d3.axisBottom(xTimeScale);
-   var yAxis = d3.axisLeft(yLinearScale);
+   var xAxis = d3.axisBottom(xLinearScale);
+   var yAxis = d3.axisLeft(yLinearScale).ticks(20);
 
    // append axes
    chartGroup.append("g")
@@ -79,39 +79,61 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
      .attr("cx", d => xLinearScale(d.age))
      .attr("cy", d => yLinearScale(d.smokes))
      .attr("r", 12)
-     .attr("fill", "blue")
-     .attr("opacity", ".6");
+     .attr("fill", "lightBlue")
+     .attr("opacity", ".75");
 
      // add State abbrev to circles
- chartGroup.selectAll("text.text-circles")
-     .data(myData)
+   chartGroup.selectAll("text.text-circles")
+     .data(healthData)
      .enter()
      .append("text")
      .classed("text-circles",true)
      .text(d => d.abbr)
      .attr("x", d => xLinearScale(d.age))
-     .attr("y", d => yLinearScale(d.somkes))
+     .attr("y", d => yLinearScale(d.smokes))
      .attr("dy",5)
      .attr("text-anchor","middle")
      .attr("font-size","12px")
      .attr("fill", "white");
 
- // y axis
- chartGroup.append("text")
+    // y axis
+   chartGroup.append("text")
      .attr("transform", "rotate(-90)")
-     .attr("y", 30 - margin.left)
+     .attr("y", 0 - margin.left)
      .attr("x", 0 - (height / 2))
      .attr("dy", "1em")
      .classed("aText", true)
-     .text("Lacks Healthcare (%)");
+     .text("Smokes (%)");
 
- // x axis
- chartGroup.append("text")
-     .attr("y", height + margin.bottom/2 - 10)
+   // x axis
+   chartGroup.append("text")
+     .attr("y", height + margin.bottom/2)
      .attr("x", width / 2)
      .attr("dy", "1em")
      .classed("aText", true)
-     .text("Poverty Rate (%)");
+     .text("Age (median)");
+
+   // Step 1: Initialize Tooltip
+   var toolTip = d3.tip()
+      .attr("class", "tooltip")
+      .offset([80, -60])
+      .html(function(d) {
+        return (
+          `<strong>${d.state}<strong><hr>Age (median): ${d.Age} Smokes (%): ${d.smokes}`
+          );
+        });
+
+   // Step 2: Create the tooltip in chartGroup.
+   chartGroup.call(toolTip);
+
+   // Step 3: Create "mouseover" event listener to display tooltip
+   circlesGroup.on("mouseover", function(d) {
+      toolTip.show(d, this);
+    })
+   // Step 4: Create "mouseout" event listener to hide tooltip
+     .on("mouseout", function(d) {
+        toolTip.hide(d);
+      });
 
    }).catch(function(error) {
   console.log(error);
