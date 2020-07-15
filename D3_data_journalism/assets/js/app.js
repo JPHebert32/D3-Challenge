@@ -54,12 +54,12 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
      .range([0, width]);
 
    var yLinearScale = d3.scaleLinear()
-     .domain([0, d3.max(healthData, d => d.smokes)*10])
+     .domain([0, d3.min(healthData, d => d.smokes)*3])
      .range([height, 0]);
 
    // create axes
    var xAxis = d3.axisBottom(xLinearScale);
-   var yAxis = d3.axisLeft(yLinearScale).ticks(20);
+   var yAxis = d3.axisLeft(yLinearScale).ticks(15);
 
    // append axes
    chartGroup.append("g")
@@ -71,15 +71,15 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
      .style("font-size", "16px")
      .call(yAxis);
 
-     // function for circles
-   chartGroup.selectAll("circle")
+     // append circles
+      var circlesGroup = chartGroup.selectAll("circle")
      .data(healthData)
      .enter()
      .append("circle")
      .attr("cx", d => xLinearScale(d.age))
      .attr("cy", d => yLinearScale(d.smokes))
-     .attr("r", 12)
-     .attr("fill", "lightBlue")
+     .attr("r", 13)
+     .attr("fill", "#00bfff")
      .attr("opacity", ".75");
 
      // add State abbrev to circles
@@ -116,10 +116,10 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
    // Step 1: Initialize Tooltip
    var toolTip = d3.tip()
       .attr("class", "tooltip")
-      .offset([80, -60])
+      .offset([0, 0])
       .html(function(d) {
         return (
-          `<strong>${d.state}<strong><hr>Age (median): ${d.Age} Smokes (%): ${d.smokes}`
+          `<strong>${d.state}</strong><hr>Age: ${d.age} (median)<hr>Smokes: ${d.smokes}(%)`
           );
         });
 
