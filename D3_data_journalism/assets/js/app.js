@@ -50,11 +50,11 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
 
    // create scales
    var xLinearScale = d3.scaleLinear()
-     .domain(d3.extent(healthData, d => d.age))
+     .domain(d3.extent(healthData, d => d.age - .5))
      .range([0, width]);
 
    var yLinearScale = d3.scaleLinear()
-     .domain([0, d3.min(healthData, d => d.smokes)*3])
+     .domain([5, d3.min(healthData, d => d.smokes)*2.8])
      .range([height, 0]);
 
    // create axes
@@ -116,7 +116,7 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
    // Step 1: Initialize Tooltip
    var toolTip = d3.tip()
       .attr("class", "tooltip")
-      .offset([0, 0])
+      .offset([-10, 80])
       .html(function(d) {
         return (
           `<strong>${d.state}</strong><hr>Age: ${d.age} (median)<hr>Smokes: ${d.smokes}(%)`
