@@ -18,7 +18,7 @@ function makeResponsive() {
 
   var margin = {
     top: 50,
-    bottom: 50,
+    bottom: 150,
     right: 50,
     left: 50
   };
@@ -44,13 +44,13 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
 
   // parse data
    healthData.forEach(function(data) {
-     data.healthcare = +data.age;
-     data.poverty = +data.smokes;
+     data.age = +data.age;
+     data.smokes = +data.smokes;
    });
 
    // create scales
    var xLinearScale = d3.scaleLinear()
-     .domain(d3.extent(healthData, d => d.age - .5))
+     .domain([d3.min(healthData.map(d => d.age))-.5, d3.max(healthData.map(d => d.age)) +.5])
      .range([0, width]);
 
    var yLinearScale = d3.scaleLinear()
@@ -107,7 +107,7 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
 
    // x axis
    chartGroup.append("text")
-     .attr("y", height + margin.bottom/2)
+     .attr("y", height + margin.bottom/4)
      .attr("x", width / 2)
      .attr("dy", "1em")
      .classed("aText", true)
@@ -115,8 +115,8 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
 
    // Step 1: Initialize Tooltip
    var toolTip = d3.tip()
-      .attr("class", "tooltip")
-      .offset([-10, 80])
+      .attr("class", "d3-tip")
+      .offset([-10, 40])
       .html(function(d) {
         return (
           `<strong>${d.state}</strong><hr>Age: ${d.age} (median)<hr>Smokes: ${d.smokes}(%)`
